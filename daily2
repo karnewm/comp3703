@@ -1,26 +1,29 @@
-Problem 1 - def has_left_options(position):
+# Problem 1
+def has_left_options(position):
     for i in range(len(position)):
         # Move right into empty space
         if i + 1 < len(position) and position[i] == 'T' and position[i+1] == ' ':
             return True
         
+        # Jump over F into empty space
         if i + 2 < len(position) and position[i] == 'T' and position[i+1] == 'F' and position[i+2] == ' ':
             return True
     
     return False
 
 
-
-
-Problem 2 - def get_left_options(position):
+# Problem 2
+def get_left_options(position):
     options = []
     
     for i in range(len(position)):
+        # Move right into empty space
         if i + 1 < len(position) and position[i] == 'T' and position[i+1] == ' ':
             new_pos = list(position)
             new_pos[i], new_pos[i+1] = new_pos[i+1], new_pos[i]
             options.append("".join(new_pos))
         
+        # Jump over F into empty space
         if i + 2 < len(position) and position[i] == 'T' and position[i+1] == 'F' and position[i+2] == ' ':
             new_pos = list(position)
             new_pos[i], new_pos[i+2] = new_pos[i+2], new_pos[i]
@@ -29,30 +32,20 @@ Problem 2 - def get_left_options(position):
     return options
 
 
-
-Problem 3 - #Test1:
-print(has_left_options("T "))  # True
-
-#Test2
-print(has_left_options("TF "))  # True
-
-#Test3
-print(has_left_options("FT"))  # False
+# Problem 3: Tests for has_left_options
+print("Testing has_left_options:")
+print(has_left_options("T "))    # True
+print(has_left_options("TF "))   # True
+print(has_left_options("FT"))    # False
 
 
+# Problem 4: Tests for get_left_options
+print("\nTesting get_left_options:")
+print(get_left_options("T "))    
+# [' T']
 
+print(get_left_options("TF "))   
+# [' FT']
 
-
-
-
-Problem 4- #Test1
-print(get_left_options("T "))  
-# Expected: [" T"]
-
-#Test2
-print(get_left_options("TF "))  
-# Expected: [" FT"]
-
-#Test3
 print(get_left_options("T T "))  
-# Possible outputs: [" TT ", "T  T"]
+# [' TT ', 'T  T']
