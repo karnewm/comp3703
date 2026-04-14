@@ -1,1 +1,69 @@
+def has_right_options(position: str) -> bool:
+    
+    n = len(position)
+
+    for i in range(n):
+        if position[i] == 'F':
+            if i > 0 and position[i - 1] == ' ':
+                return True
+
+            if i > 1 and position[i - 1] == 'T' and position[i - 2] == ' ':
+                return True
+
+    return False
+
+
+def get_right_options(position: str) -> list:
+    """
+    Returns a list of all possible positions after one valid Right move.
+    """
+    options = []
+    n = len(position)
+
+    for i in range(n):
+        if position[i] == 'F':
+            if i > 0 and position[i - 1] == ' ':
+                new_pos = list(position)
+                new_pos[i], new_pos[i - 1] = new_pos[i - 1], new_pos[i]
+                options.append(''.join(new_pos))
+
+            if i > 1 and position[i - 1] == 'T' and position[i - 2] == ' ':
+                new_pos = list(position)
+                new_pos[i] = ' '
+                new_pos[i - 1] = 'T'
+                new_pos[i - 2] = 'F'
+                options.append(''.join(new_pos))
+
+    return options
+
+
+
+
+def test_has_right_options():
+    assert has_right_options(" F") == True
+
+    assert has_right_options(" TF") == True
+
+    assert has_right_options("F T") == False
+
+    print("has_right_options tests passed!")
+
+
+def test_get_right_options():
+    result1 = get_right_options(" F")
+    assert result1 == ["F "]
+
+    result2 = get_right_options(" TF")
+    assert result2 == ["FT "]
+
+    result3 = get_right_options(" T F")
+    assert result3 == [" TF "]
+
+    print("get_right_options tests passed!")
+
+
+if __name__ == "__main__":
+    test_has_right_options()
+    test_get_right_options()
+
 
