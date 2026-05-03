@@ -1,0 +1,120 @@
+# Problem 1
+from itertools import product
+
+def all_positions(n):
+    return [''.join(p) for p in product(['T','F','_'], repeat=n)]
+
+
+# Problem 2
+from itertools import combinations
+
+def constrained_positions(n, t, f):
+    if t + f > n:
+        return []
+    
+    positions = []
+    indices = list(range(n))
+    
+    for t_pos in combinations(indices, t):
+        remaining = set(indices) - set(t_pos)
+        for f_pos in combinations(remaining, f):
+            arr = ['_'] * n
+            for i in t_pos:
+                arr[i] = 'T'
+            for i in f_pos:
+                arr[i] = 'F'
+            positions.append(''.join(arr))
+    
+    return positions
+
+
+# Problem 3
+import time
+
+def benchmark_all_positions(max_n):
+    results = []
+    for n in range(3, max_n + 1):
+        start = time.time()
+        positions = all_positions(n)
+        end = time.time()
+        results.append((n, len(positions), end - start))
+    return results
+
+
+def benchmark_constrained(max_n, t, f):
+    results = []
+    for n in range(3, max_n + 1):
+        start = time.time()
+        positions = constrained_positions(n, t, f)
+        end = time.time()
+        results.append((n, len(positions), end - start))
+    return results
+
+
+# Problem 4
+from collections import deque
+
+def get_moves(state):
+    moves = []
+    n = len(state)
+    for i in range(n):
+        if state[i] == 'T':
+            if i + 1 < n and state[i+1] == '_':
+                s = list(state)
+                s[i], s[i+1] = s[i+1], s[i]
+                moves.append(''.join(s))
+            elif i + 2 < n and state[i+1] == 'F' and state[i+2] == '_':
+                s = list(state)
+                s[i], s[i+2] = s[i+2], s[i]
+                moves.append(''.join(s))
+        if state[i] == 'F':
+            if i - 1 >= 0 and state[i-1] == '_':
+                s = list(state)
+                s[i], s[i-1] = s[i-1], s[i]
+                moves.append(''.join(s))
+            elif i - 2 >= 0 and state[i-1] == 'T' and state[i-2] == '_':
+                s = list(state)
+                s[i], s[i-2] = s[i-2], s[i]
+                moves.append(''.join(s))
+    return moves
+
+
+def bfs(start):
+    visited = set()
+    queue = deque([start])
+    count = 0
+    while queue:
+        state = queue.popleft()
+        if state in visited:
+            continue
+        visited.add(state)
+        count += 1
+        for nxt in get_moves(state):
+            if nxt not in visited:
+                queue.append(nxt)
+    return count
+
+
+# Problem 5
+def dfs(start):
+    visited = set()
+    stack = [start]
+    count = 0
+    while stack:
+        state = stack.pop()
+        if state in visited:
+            continue
+        visited.add(state)
+        count += 1
+        for nxt in get_moves(state):
+            if nxt not in visited:
+                stack.append(nxt)
+    return count
+
+
+
+#TEST
+print(all_positions(3))
+print(constrained_positions(5, 2, 1))
+print(bfs("TT_FF"))
+print(dfs("TT_FF"))
