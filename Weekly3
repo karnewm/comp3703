@@ -1,0 +1,143 @@
+from math import inf
+
+def moves(position, player):
+    result = []
+    board = list(position)
+    n = len(board)
+
+    if player == "T":
+        for i in range(n):
+            if board[i] == "T":
+                if i + 1 < n and board[i + 1] == "_":
+                    new_board = board[:]
+                    new_board[i], new_board[i + 1] = "_", "T"
+                    result.append(("".join(new_board), (i, i + 1)))
+
+                if i + 2 < n and board[i + 1] == "F" and board[i + 2] == "_":
+                    new_board = board[:]
+                    new_board[i], new_board[i + 2] = "_", "T"
+                    result.append(("".join(new_board), (i, i + 2)))
+    else:
+        for i in range(n):
+            if board[i] == "F":
+                if i - 1 >= 0 and board[i - 1] == "_":
+                    new_board = board[:]
+                    new_board[i], new_board[i - 1] = "_", "F"
+                    result.append(("".join(new_board), (i, i - 1)))
+
+                if i - 2 >= 0 and board[i - 1] == "T" and board[i - 2] == "_":
+                    new_board = board[:]
+                    new_board[i], new_board[i - 2] = "_", "F"
+                    result.append(("".join(new_board), (i, i - 2)))
+
+    return result
+
+def other(player):
+    return "F" if player == "T" else "T"
+
+# Problem 1
+
+def minimax(position, player):
+    nodes = 0
+
+    def solve(pos, turn):
+        nonlocal nodes
+        nodes += 1
+
+        next_moves = moves(pos, turn)
+
+        if not next_moves:
+            return -1, None
+
+        best_score = -inf
+        best_move = None
+
+        for new_pos, move in next_moves:
+            score, _ = solve(new_pos, other(turn))
+            score = -score
+
+            if score > best_score:
+                best_score = score
+                best_move = move
+
+        return best_score, best_move
+
+    score, best_move = solve(position, player)
+
+    if score == 1:
+        result = "Win"
+    else:
+        result = "Loss"
+
+    return result, best_move, nodes
+
+# Problem 2
+
+def alphabeta(position, player):
+    nodes = 0
+
+    def solve(pos, turn, alpha, beta):
+        nonlocal nodes
+        nodes += 1
+
+        next_moves = moves(pos, turn)
+
+        if not next_moves:
+            return -1, None
+
+        best_move = None
+
+        for new_pos, move in next_moves:
+            score, _ = solve(new_pos, other(turn), -beta, -alpha)
+            score = -score
+
+            if score > alpha:
+                alpha = score
+                best_move = move
+
+            if alpha >= beta:
+                break
+
+        return alpha, best_move
+
+    score, best_move = solve(position, player, -inf, inf)
+
+    if score == 1:
+        result = "Win"
+    else:
+        result = "Loss"
+
+    return result, best_move, nodes
+
+# Problem 3
+
+tests = [
+    ("TT_FF", "T"),
+    ("T_TFF", "T"),
+    ("TTF_F", "F"),
+    ("TTT_FFF", "T"),
+    ("TTTT_FFFF", "T")
+]
+
+print("MINIMAX TESTS")
+for pos, player in tests:
+    result, move, nodes = minimax(pos, player)
+    print(pos, player, result, move, nodes)
+
+print()
+
+print("ALPHA BETA TESTS")
+for pos, player in tests:
+    result, move, nodes = alphabeta(pos, player)
+    print(pos, player, result, move, nodes)
+
+print()
+
+large = "TTTTT_FFFFF"
+
+m1 = minimax(large, "T")
+m2 = alphabeta(large, "T")
+
+print("LARGE TEST")
+print("Minimax:", m1)
+print("AlphaBeta:", m2)
